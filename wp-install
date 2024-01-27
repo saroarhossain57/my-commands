@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e
+
+while getopts "p:" opt; do  # Removed colon before "p"
+  case $opt in
+    p)
+      path="${OPTARG#*=}"  # Extract path correctly
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [[ -z "$path" ]]; then
+  echo "Error: --path argument is required." >&2
+  exit 1
+fi
+
+
+# Download wp core in a specified path
+wp core download --path=$path
+
+# Move to the path
+cd $path
+
+# Create a database in mysql using valet db
+valet db:create $path
+
+# Setup database config
+wp config create --dbname=$path --dbuser=root --dbpass=limon101020 --dbhost=localhost
+
+# Install wp core
+wp core install --url="http://$path.test" --title="Fresh WP Installation" --admin_user="admin" --admin_password="admin" --admin_email="limonhossain57@gmail.com"
+
+# Show success message
+echo "🚀 WP installation completed successfully! 🔥"
+echo "Your site URL: http://$path.test"
+echo "Your admin username: admin"
+echo "Your admin password: admin"
+echo "Your admin URL: http://$path.test/wp-admin"
