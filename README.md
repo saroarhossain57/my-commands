@@ -1,2 +1,3 @@
 # Some basic Shell Scripts.
- Some basic shell scripts for my personal use
+
+Here is some basic shell scirtps that I use for my own personal use.
